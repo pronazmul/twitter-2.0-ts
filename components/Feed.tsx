@@ -2,6 +2,7 @@ import { RefreshIcon } from '@heroicons/react/outline'
 import React from 'react'
 import TweetBox from './elements/TweetBox'
 import { Tweet } from './../typings.d'
+import TweetComponent from './elements/Tweet'
 
 interface Props {
   tweets: Tweet[]
@@ -20,7 +21,11 @@ const Feed = ({ tweets }: Props) => {
         <TweetBox />
       </div>
       {/* Tweet */}
-      <div></div>
+      <div>
+        {tweets.map((tweet) => (
+          <TweetComponent key={tweet._id} tweet={tweet} />
+        ))}
+      </div>
     </div>
   )
 }

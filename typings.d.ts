@@ -8,8 +8,27 @@ export interface Tweet extends TweetBody {
 }
 
 export type TweetBody = {
-  text: 'string'
-  username: 'string'
-  profileImg: 'string'
-  tweetImg?: 'string'
+  text: string
+  username: string
+  profileImg: string
+  tweetImg?: string
+}
+
+export interface Comment extends CommentBody {
+  _id: string
+  _createdAt: string
+  _rev: string
+  _type: 'comment'
+  _updatedAt: string
+  tweet: {
+    _ref: string
+    _type: 'reference'
+  }
+}
+
+export type CommentBody = {
+  comment: string
+  tweetId: string
+  username: string
+  profileImg: string
 }
