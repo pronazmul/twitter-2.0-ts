@@ -1,4 +1,5 @@
 import React from 'react'
+import { useSession } from 'next-auth/react'
 import {
   EmojiHappyIcon,
   LocationMarkerIcon,
@@ -9,12 +10,17 @@ import {
 
 const TweetBox = () => {
   const [input, setInput] = React.useState<string>('')
+  const { data: session } = useSession()
+
+  console.log(session)
 
   return (
     <div className="flex space-x-2 p-5">
       <img
-        className="mt-5 h-14 w-14 rounded-full object-fill "
-        src="images/avatar-men.jpg"
+        className="mt-5 h-14 w-14 rounded-full object-cover"
+        src={
+          session?.user?.image ? session.user.image : 'images/avatar-men.jpg'
+        }
         alt="tweet box icon"
       />
       <div className="flex flex-1 items-center pl-2">

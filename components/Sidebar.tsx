@@ -10,18 +10,20 @@ import {
   HomeIcon,
 } from '@heroicons/react/outline'
 import SidebarRaw from './elements/SidebarRaw'
+import { useSession, signIn, signOut } from 'next-auth/react'
 
 function Sidebar() {
+  const { data: session } = useSession()
   return (
-    <div className="col-span-2 flex flex-col px-4 items-center md:items-start">
-      <img className="h-10 w-10 m-3" src="images/twitter-logo.png" alt="Logo" />
+    <div className="col-span-2 flex flex-col items-center px-4 md:items-start">
+      <img className="m-3 h-10 w-10" src="images/twitter-logo.png" alt="Logo" />
       <SidebarRaw Icon={HomeIcon} title="Home" />
       <SidebarRaw Icon={HashtagIcon} title="Explore" />
       <SidebarRaw Icon={BellIcon} title="Notifications" />
       <SidebarRaw Icon={MailIcon} title="Messages" />
       <SidebarRaw Icon={BookmarkAltIcon} title="Bookmarks" />
       <SidebarRaw Icon={CollectionIcon} title="Lists" />
-      <SidebarRaw Icon={UserIcon} title="Sign In" />
+      <SidebarRaw onClick={session ? signOut : signIn} Icon={UserIcon} title={session ? 'Sign out' : 'Sign in'} />
       <SidebarRaw Icon={DotsCircleHorizontalIcon} title="More" />
     </div>
   )
