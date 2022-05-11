@@ -19,7 +19,6 @@ const Tweet = ({ tweet }: Props) => {
     const comments: Comment[] = await fetchComments(tweet._id)
     setComments(comments)
   }
-
   useEffect(() => {
     refreshComment()
   }, [])
@@ -36,7 +35,7 @@ const Tweet = ({ tweet }: Props) => {
           <div className="flex items-center space-x-1">
             <p>{tweet.username}</p>
             <p className="hidden text-sm text-gray-500 sm:inline">
-              @{tweet.username.replace(/\s+/g, '')}
+              @{tweet.username.replace(/\s+/g, '').toLocaleLowerCase()}
             </p>
             <p className="text-sm text-gray-500">
               {moment(tweet._createdAt).fromNow()}
@@ -59,7 +58,7 @@ const Tweet = ({ tweet }: Props) => {
         </div>
         <div className="flex cursor-pointer items-center space-x-3">
           <ChatAlt2Icon className="h-5 w-5 " />
-          <p>2</p>
+          <p>{comments?.length}</p>
         </div>
         <div className="flex cursor-pointer items-center space-x-3">
           <SwitchHorizontalIcon className="h-5 w-5 " />
@@ -69,23 +68,22 @@ const Tweet = ({ tweet }: Props) => {
           <UploadIcon className="h-5 w-5 " />
         </div>
       </div>
-
       {/* Comment Box Logic */}
       {comments?.length > 0 && (
-        <div className="my-2 mt-5 max-h-44 overflow-y-scroll border-t border-gray-200 p-5">
+        <div className="my-2 mt-5 max-h-44 space-y-5 overflow-y-scroll border-t border-gray-200 p-5">
           {comments.map((comment) => (
-            <div key={comment._id} className="flex space-x-3">
+            <div key={comment._id} className="relative flex space-x-3">
+              <hr className="absolute top-10 left-5 h-8 border-x border-twitter/30" />
               <img
-                className="h-7 w-7 rounded-full object-cover "
+                className="mt-2 h-7 w-7 rounded-full object-cover "
                 src={comment.profileImg}
                 alt="Comment User"
               />
-
               <div>
                 <div className="flex items-center space-x-2">
                   <p className="font-bold">{comment.username}</p>
                   <p className="hidden text-sm text-gray-500 sm:inline">
-                    @{comment.username.replace(/\s+/g, '')}
+                    @{comment.username.replace(/\s+/g, '').toLocaleLowerCase()}
                   </p>
                   <p className="text-sm text-gray-500">
                     {moment(comment._createdAt).fromNow()}
