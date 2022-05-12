@@ -16,10 +16,10 @@ const Widgets = () => {
       </div>
       {/* Twitter Profile Embed Plugin */}
       <TwitterTimelineEmbed
-          sourceType="profile"
-          screenName="pronazmul"
-          options={{ height: 1000 }}
-        />
+        sourceType="profile"
+        screenName="pronazmul"
+        options={{ height: 1000 }}
+      />
     </div>
   )
 }
