@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react'
-import { Comment, Tweet } from '../../typings'
+import React, { useEffect, Dispatch, SetStateAction } from 'react'
+import { Comment, Tweet, CommentBody } from '../../typings'
 import moment from 'moment'
 import { fetchComments } from './../../utilits/fetchComments'
 import {
@@ -8,12 +8,16 @@ import {
   SwitchHorizontalIcon,
   UploadIcon,
 } from '@heroicons/react/outline'
+import { useSession } from 'next-auth/react'
+import { fetchTweets } from '../../utilits/fetchTweets'
 
 interface Props {
   tweet: Tweet
+  setTweets: Dispatch<SetStateAction<Tweet[]>>
 }
 
-const Tweet = ({ tweet }: Props) => {
+const Tweet = ({ tweet, setTweets }: Props) => {
+  const { data: session } = useSession()
   const [comments, setComments] = React.useState<Comment[]>([])
   const refreshComment = async () => {
     const comments: Comment[] = await fetchComments(tweet._id)
@@ -22,6 +26,43 @@ const Tweet = ({ tweet }: Props) => {
   useEffect(() => {
     refreshComment()
   }, [])
+
+  const [commentBoxOpen, setCommentBoxOpen] = React.useState<boolean>(false)
+  const [commentInput, setCommentInput] = React.useState<string>('')
+
+  // Post Commment
+  const postComment = async () => {
+    const commentInfo: CommentBody = {
+      comment: commentInput,
+      username: session?.user?.name || 'Anonymous User',
+      profileImg:
+        session?.user?.image ||
+        'https://pbs.twimg.com/profile_images/1321514249525489664/ihfZ-RyO_bigger.jpg',
+      tweetId: tweet._id,
+    }
+
+    const result = await fetch('/api/addComments', {
+      method: 'POST',
+      body: JSON.stringify(commentInfo),
+    })
+
+    const json = await result.json()
+    const tweets = await fetchTweets()
+
+    setTweets(tweets)
+
+    return json
+  }
+  const handleComment = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ) => {
+    e.preventDefault()
+    postComment()
+
+    // Reset Form:
+    setCommentInput('')
+    setCommentBoxOpen(false)
+  }
 
   return (
     <div className="flex flex-col border-y border-gray-100 p-5">
@@ -54,9 +95,12 @@ const Tweet = ({ tweet }: Props) => {
       <div className="mt-5 flex justify-between text-gray-400">
         <div className="flex cursor-pointer items-center space-x-3">
           <HeartIcon className="h-5 w-5 " />
-          <p>20</p>
+          <p>0</p>
         </div>
-        <div className="flex cursor-pointer items-center space-x-3">
+        <div
+          onClick={() => setCommentBoxOpen(!commentBoxOpen)}
+          className="flex cursor-pointer items-center space-x-3"
+        >
           <ChatAlt2Icon className="h-5 w-5 " />
           <p>{comments?.length}</p>
         </div>
@@ -69,7 +113,25 @@ const Tweet = ({ tweet }: Props) => {
         </div>
       </div>
       {/* Comment Box Logic */}
-      {comments?.length > 0 && (
+      {session && commentBoxOpen && (
+        <form className="mt-4 flex space-x-1">
+          <input
+            onChange={(e) => setCommentInput(e.target.value)}
+            className="flex-1 rounded bg-gray-100 p-3 outline-none"
+            type="text"
+            placeholder="Add a comment..."
+          />
+          <button
+            disabled={!commentInput}
+            onClick={handleComment}
+            className="duration-70 rounded px-3 text-twitter transition hover:bg-twitter hover:text-white disabled:text-gray-200"
+          >
+            Post
+          </button>
+        </form>
+      )}
+      {/* View Comemnt */}
+      {session && comments?.length > 0 && (
         <div className="my-2 mt-5 max-h-44 space-y-5 overflow-y-scroll border-t border-gray-200 p-5">
           {comments.map((comment) => (
             <div key={comment._id} className="relative flex space-x-3">
