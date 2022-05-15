@@ -38,7 +38,7 @@ const Feed = ({ tweets: tweetProps }: Props) => {
       {/* Tweet */}
       <div>
         {tweets.map((tweet) => (
-          <TweetComponent key={tweet._id} tweet={tweet} setTweets={setTweets} />
+          <TweetComponent key={tweet._id} tweet={tweet} />
         ))}
       </div>
     </div>

@@ -9,14 +9,13 @@ import {
   UploadIcon,
 } from '@heroicons/react/outline'
 import { useSession } from 'next-auth/react'
-import { fetchTweets } from '../../utilits/fetchTweets'
+import toast from 'react-hot-toast'
 
 interface Props {
   tweet: Tweet
-  setTweets: Dispatch<SetStateAction<Tweet[]>>
 }
 
-const Tweet = ({ tweet, setTweets }: Props) => {
+const Tweet = ({ tweet }: Props) => {
   const { data: session } = useSession()
   const [comments, setComments] = React.useState<Comment[]>([])
   const refreshComment = async () => {
@@ -47,10 +46,10 @@ const Tweet = ({ tweet, setTweets }: Props) => {
     })
 
     const json = await result.json()
-    const tweets = await fetchTweets()
-
-    setTweets(tweets)
-
+    refreshComment()
+    toast(`${commentInfo.username} commented ${commentInfo.comment}`, {
+      position: 'bottom-left',
+    })
     return json
   }
   const handleComment = (
@@ -132,10 +131,14 @@ const Tweet = ({ tweet, setTweets }: Props) => {
       )}
       {/* View Comemnt */}
       {session && comments?.length > 0 && (
-        <div className="my-2 mt-5 max-h-44 space-y-5 overflow-y-scroll border-t border-gray-200 p-5">
-          {comments.map((comment) => (
+        <div className="my-2 mt-5 max-h-44 space-y-5 overflow-y-scroll border-t border-gray-200 p-5 scrollbar-hide">
+          {comments.map((comment, index) => (
             <div key={comment._id} className="relative flex space-x-3">
-              <hr className="absolute top-10 left-5 h-8 border-x border-twitter/30" />
+              {comments.length != index + 1 ? (
+                <hr className="absolute top-10 left-6 h-8 border-x border-twitter/30" />
+              ) : (
+                <hr />
+              )}
               <img
                 className="mt-2 h-7 w-7 rounded-full object-cover "
                 src={comment.profileImg}
